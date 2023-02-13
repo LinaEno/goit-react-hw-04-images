@@ -1,4 +1,4 @@
-import { Component, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from './Searchbar/Searchbar';
 import fetchImages from '../services/Api';
 import ImageGallery from './ImageGallery';
@@ -7,48 +7,42 @@ import { InfinitySpin } from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Notification from './Notification';
+import NotificationError from './Notification/NotificationError';
 
-// export function App() {
-//   const [images, setImages] = useState([]);
-//   const [page, setPage] = useState(1);
-//   const [query, setQuery] = useState('');
-//   const [totalImages, setTotalImages] = useState(0);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [error, setError] = useState('');
+export function App() {
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState('');
+  const [totalImages, setTotalImages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-//   useEffect(() => {});
-// }
-export class App extends Component {
-  state = {
-    images: [],
-    page: 1,
-    query: '',
-    totalImages: 0,
-    isLoading: false,
-    error: '',
+  useEffect(() => {
+    if (query === '') return;
+    getImages();
+  }, [query, page]);
+
+  const handleLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
-  componentDidUpdate(_, prevState) {
-    const { query, page } = this.state;
-    if (prevState.page !== page || prevState.query !== query) {
-      this.getImages();
-      // this.onScrollToBottom();
+  const setQueryFunc = fetchQuery => {
+    if (query === fetchQuery) {
+      toast.error('Enter new request');
     }
-  }
+    setQuery(fetchQuery);
+    setPage(1);
+    setImages([]);
+    setTotalImages(0);
+  };
 
-  getImages = async () => {
-    const { query, page } = this.state;
+  const getImages = async () => {
     try {
-      this.setState({ isLoading: true, error: '' });
+      setIsLoading(true);
+      setError('');
       const { totalImages, images } = await fetchImages(query, page);
-
-      this.setState(prevState => ({
-        images: [...prevState.images, ...images],
-        totalImages,
-      }));
-      // if (page !== 1) {
-      //   this.onScrollToBottom();
-      // }
+      setImages(prevImages => [...prevImages, ...images]);
+      setTotalImages(totalImages);
 
       if (totalImages.length < 1) {
         toast.error('Nothing was found for your request');
@@ -56,63 +50,36 @@ export class App extends Component {
       }
     } catch (error) {
       toast.error('Oops, something went wrong');
-      this.setState({ error: error.message });
+      setError(error.message);
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   };
 
-  setQuery = query => {
-    if (query === this.state.query) {
-      toast.error('Enter new request');
-    }
-    this.setState({
-      query,
-      page: 1,
-      images: [],
-      totalImages: 0,
-    });
-  };
+  return (
+    <>
+      <SearchBar onSubmit={setQueryFunc} />
 
-  handleLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  };
+      {images.length === 0 ? (
+        <Notification />
+      ) : (
+        <ImageGallery images={images} />
+      )}
 
-  // onScrollToBottom = () => {
-  //   window.scrollTo({
-  //     bottom: 0,
-  //     behavior: 'smooth',
-  //   });
-  // };
+      {totalImages !== images.length && !isLoading && (
+        <Button onClickLoadMore={handleLoadMore} />
+      )}
 
-  render() {
-    const { images, totalImages, isLoading } = this.state;
+      {isLoading && <InfinitySpin width="200" color="#3f51b5" />}
 
-    return (
-      <>
-        <SearchBar onSubmit={this.setQuery} />
+      {error && <NotificationError />}
 
-        {images.length === 0 ? (
-          <Notification />
-        ) : (
-          <ImageGallery images={images} />
-        )}
-
-        {totalImages !== images.length && !isLoading && (
-          <Button onClickLoadMore={this.handleLoadMore} />
-        )}
-
-        {isLoading && <InfinitySpin width="200" color="#3f51b5" />}
-
-        <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          theme="colored"
-          closeOnClick
-        />
-      </>
-    );
-  }
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        theme="colored"
+        closeOnClick
+      />
+    </>
+  );
 }
