@@ -14,11 +14,11 @@ export default async function fetchImages(value, page) {
     safesearch: true,
   };
   const { data } = await axios.get('/', { params });
-  const images = data.hits.map(image => ({
-    id: image.id,
-    webformatURL: image.webformatURL,
-    tags: image.tags,
-    largeImageURL: image.largeImageURL,
+  const images = data.hits.map(({ id, webformatURL, tags, largeImageURL }) => ({
+    id,
+    webformatURL,
+    tags,
+    largeImageURL,
   }));
   const totalImages = data.totalHits;
   return { totalImages, images };
