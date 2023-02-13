@@ -19,8 +19,28 @@ export function App() {
 
   useEffect(() => {
     if (query === '') return;
+    const getImages = async () => {
+      try {
+        setIsLoading(true);
+        setError('');
+        const { totalImages, images } = await fetchImages(query, page);
+        setImages(prevImages => [...prevImages, ...images]);
+        setTotalImages(totalImages);
+
+        if (totalImages.length < 1) {
+          toast.error('Nothing was found for your request');
+          return;
+        }
+      } catch (error) {
+        toast.error('Oops, something went wrong');
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     getImages();
-  });
+  }, [page, query]);
 
   const handleLoadMore = () => {
     setPage(prevPage => prevPage + 1);
@@ -34,26 +54,6 @@ export function App() {
     setPage(1);
     setImages([]);
     setTotalImages(0);
-  };
-
-  const getImages = async () => {
-    try {
-      setIsLoading(true);
-      setError('');
-      const { totalImages, images } = await fetchImages(query, page);
-      setImages(prevImages => [...prevImages, ...images]);
-      setTotalImages(totalImages);
-
-      if (totalImages.length < 1) {
-        toast.error('Nothing was found for your request');
-        return;
-      }
-    } catch (error) {
-      toast.error('Oops, something went wrong');
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
