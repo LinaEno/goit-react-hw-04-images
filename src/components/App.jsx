@@ -20,7 +20,7 @@ export function App() {
   useEffect(() => {
     if (query === '') return;
     getImages();
-  }, [query]);
+  });
 
   const handleLoadMore = () => {
     setPage(prevPage => prevPage + 1);
