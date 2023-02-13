@@ -6,18 +6,17 @@ const modalRoot = document.querySelector('#modal-root');
 
 export default function Modal({ largeImageURL, tags, onClose }) {
   useEffect(() => {
+    const handleKeydown = e => {
+      if (e.code === 'Escape') {
+        onClose();
+      }
+    };
     window.addEventListener('keydown', handleKeydown);
     return () => {
-      console.log('12313');
       window.removeEventListener('keydown', handleKeydown);
     };
-  });
+  }, [onClose]);
 
-  const handleKeydown = e => {
-    if (e.code === 'Escape') {
-      onClose();
-    }
-  };
   const handleBackdropClick = e => {
     if (e.target === e.currentTarget) {
       onClose();

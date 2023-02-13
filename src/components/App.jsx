@@ -33,10 +33,10 @@ export class App extends Component {
       this.setState({ isLoading: true, error: '' });
       const { totalImages, images } = await fetchImages(query, page);
 
-      this.setState({
-        images: [...this.state.images, ...images],
+      this.setState(prevState => ({
+        images: [...prevState.images, ...images],
         totalImages,
-      });
+      }));
       // if (page !== 1) {
       //   this.onScrollToBottom();
       // }
