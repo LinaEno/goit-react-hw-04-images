@@ -7,7 +7,7 @@ const modalRoot = document.querySelector('#modal-root');
 export default function Modal({ largeImageURL, tags, onClose }) {
   useEffect(() => {
     window.addEventListener('keydown', handleKeydown);
-    return function remove() {
+    return () => {
       console.log('12313');
       window.removeEventListener('keydown', handleKeydown);
     };
