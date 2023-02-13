@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, useState, useEffect } from 'react';
 import SearchBar from './Searchbar/Searchbar';
 import fetchImages from '../services/Api';
 import ImageGallery from './ImageGallery';
@@ -7,8 +7,17 @@ import { InfinitySpin } from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Notification from './Notification';
-// import Loader from './Loader/Loader';
 
+// export function App() {
+//   const [images, setImages] = useState([]);
+//   const [page, setPage] = useState(1);
+//   const [query, setQuery] = useState('');
+//   const [totalImages, setTotalImages] = useState(0);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [error, setError] = useState('');
+
+//   useEffect(() => {});
+// }
 export class App extends Component {
   state = {
     images: [],
