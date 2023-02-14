@@ -26,8 +26,6 @@ export function App() {
         const { totalImages, images } = await fetchImages(query, page);
         setImages(prevImages => [...prevImages, ...images]);
         setTotalImages(totalImages);
-        // setPage(prevPage => prevPage + 1);
-        scrollToDown();
         if (totalImages.length < 1) {
           toast.error('Nothing was found for your request');
           return;
@@ -44,13 +42,6 @@ export function App() {
 
   const handleLoadMore = () => {
     setPage(prevPage => prevPage + 1);
-  };
-
-  const scrollToDown = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
   };
 
   const setQueryFunc = fetchQuery => {
